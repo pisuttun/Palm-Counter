@@ -1,13 +1,17 @@
-from datetime import datetime
+from datetime import datetime as dt
+import datetime
 import os
 import json
 import dotenv
 import firebase_admin
 from firebase_admin import credentials,firestore
 
-dotenv.load_dotenv()
-key = json.loads(os.getenv("firebaseKey"))
-cred = credentials.Certificate(key)
+#dotenv.load_dotenv()
+#key = json.loads(os.getenv("firebaseKey"))
+#cred = credentials.Certificate(key)
+
+cred = credentials.Certificate("serviceAccountKey.json")
+
 firebase_admin.initialize_app(cred)
 firestore_db = firestore.client()
 
@@ -26,7 +30,7 @@ def add(name):
     if not check:
         return "Invalid name"
 
-    now = str(datetime.utcnow())
+    now = str(dt.utcnow())
     firestore_db.collection(u'counter log s2').add({'name':name,'date':now.split()[0],'time':now.split()[1]})
     print(f'add {name} to scoreboard successfully')
     return name
@@ -63,8 +67,23 @@ def listScore(season):
     output = [j+" "+str(i) for [i,j] in output]
     return '\n'.join(output)
 
+def getLastScore():
+    snapshots = [x.to_dict() for x in list(firestore_db.collection(u'counter log s2').get())]
+    
+    print(snapshots[0])
+    mxDate = dt.strptime(snapshots[0]['date'],"%Y-%m-%d")
+    result = snapshots[0]
+
+    for x in snapshots:
+        if dt.strptime(x['date'],"%Y-%m-%d") > mxDate:
+            mxDate = dt.strptime(x['date'],"%Y-%m-%d")
+            result = x
+
+    result['time'] = (dt.strptime(result['time'],"%H:%M:%S.%f") + datetime.timedelta(hours=7)).strftime("%H:%M:%S")
+    return result 
+
 def isValid():
-    utc = datetime.utcnow()
+    utc = dt.utcnow()
     print("Current time: ",utc)
 
     snapshots = [x.to_dict() for x in list(firestore_db.collection(u'counter log s2').get())]

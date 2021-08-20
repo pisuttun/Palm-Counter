@@ -22,8 +22,12 @@ def scoreboard():
     season = request.args.get('season')
     return json.dumps(data.getScore(int(season)))
 
+@app.route('/last-score',methods=['GET'])
+def last_score():
+    return data.getLastScore()
+
 def run():
-  app.run(host="0.0.0.0", port=8000)
+  app.run(port=8000)
 
 def keep_alive():
   server = Thread(target=run)
