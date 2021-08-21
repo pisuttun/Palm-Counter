@@ -15,8 +15,9 @@ cred = credentials.Certificate("serviceAccountKey.json")
 firebase_admin.initialize_app(cred)
 firestore_db = firestore.client()
 
-def add(name):
+currentSeason = 2 #change here
 
+def add(name):
     if isValid() != 'OK':
         return "Duplicated date " + isValid()
     
@@ -31,7 +32,8 @@ def add(name):
         return "Invalid name"
 
     now = str(dt.utcnow())
-    firestore_db.collection(u'counter log s2').add({'name':name,'date':now.split()[0],'time':now.split()[1]})
+    collectionName = 'counter log s'+ str(currentSeason)
+    firestore_db.collection(collectionName).add({'name':name,'date':now.split()[0],'time':now.split()[1]})
     print(f'add {name} to scoreboard successfully')
     return name
 
@@ -53,9 +55,7 @@ def getScore(season):
     
 def listScore(season):
     data = getScore(season)
-    
     output = []
-
     for i,j in data.items():
         if j != 0:
             output.append([j,i])
@@ -68,9 +68,10 @@ def listScore(season):
     return '\n'.join(output)
 
 def getLastScore():
-    snapshots = [x.to_dict() for x in list(firestore_db.collection(u'counter log s2').get())]
+    print("open database")
+    collectionName = 'counter log s'+ str(currentSeason)
+    snapshots = [x.to_dict() for x in list(firestore_db.collection(collectionName).get())]
     
-    print(snapshots[0])
     mxDate = dt.strptime(snapshots[0]['date'],"%Y-%m-%d")
     result = snapshots[0]
 
@@ -86,7 +87,8 @@ def isValid():
     utc = dt.utcnow()
     print("Current time: ",utc)
 
-    snapshots = [x.to_dict() for x in list(firestore_db.collection(u'counter log s2').get())]
+    collectionName = 'counter log s'+ str(currentSeason)
+    snapshots = [x.to_dict() for x in list(firestore_db.collection(collectionName).get())]
     for x in snapshots:
         if(x['date'] == str(utc).split()[0]):
             return x['name']
