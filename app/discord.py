@@ -1,6 +1,11 @@
-from app import data
+from app.db import DB
 import discord
+import os
+import dotenv
 
+dotenv.load_dotenv()
+
+db = DB(os.getenv("dbPath"), os.getenv("seasonName"), os.getenv("timezone"))
 client = discord.Client()
 
 
@@ -29,7 +34,7 @@ async def on_message(message):
             await message.channel.send(embed=send)
         elif len(msg.split()) > 1:
             name = msg.split()[1]
-            result = data.add(name)
+            result = db.addCounter(name)
 
             if result == "Invalid name":
                 await message.channel.send(result)
@@ -49,7 +54,7 @@ async def on_message(message):
 
 
 def generateTable(season):
-    stats = data.listScore(season)
+    stats = db.listScore(season)
     send = discord.Embed(title='scordboard S'+str(season),
                          description=stats, color=0x5865F2)
     send.set_thumbnail(

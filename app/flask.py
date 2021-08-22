@@ -1,8 +1,14 @@
-from app import data
+from app.db import DB
 from flask import Flask, request
 import flask_cors
 import json
+import os
 from threading import Thread
+import dotenv
+
+dotenv.load_dotenv()
+
+db = DB(os.getenv("dbPath"), os.getenv("seasonName"), os.getenv("timezone"))
 
 app = Flask('')
 flask_cors.CORS(app)
@@ -16,12 +22,12 @@ def main():
 @app.route('/score', methods=['GET'])
 def scoreboard():
     season = request.args.get('season')
-    return json.dumps(data.getScore(int(season)))
+    return json.dumps(db.getScore(int(season)))
 
 
 @app.route('/last-score', methods=['GET'])
 def last_score():
-    return data.getLastScore()
+    return db.getLastScore()
 
 
 def run():
