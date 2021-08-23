@@ -1,3 +1,5 @@
+from os import truncate
+from collections import OrderedDict
 import sqlite3
 import pytz
 from datetime import datetime
@@ -94,10 +96,16 @@ class DB:
 
     def getScore(self, season):
         isValidSeason = self.isValidSeason(season)
-        data = {}
+        data = OrderedDict()
+        dataList = []
 
         for name in self.validName:
-            data[name] = self.countName(name, season) if isValidSeason else 0
+            dataList.append(( (self.countName(name,season) if isValidSeason else 0),name ))
+        dataList.sort(reverse=True)
+        for (i,j) in dataList:
+            data[j]=i
+
+        
         return data
 
     def listScore(self, season):
@@ -116,4 +124,4 @@ class DB:
 
     def getLastScore(self):
         data = self.lastCounter()
-        return {'name': data[1], 'datetime': data[2]} if data != None else None
+        return {'name': data[1], 'datetime': data[2].split(".")[0]} if data != None else None
