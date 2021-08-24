@@ -8,6 +8,7 @@ import dotenv
 
 dotenv.load_dotenv()
 
+
 app = Flask('')
 flask_cors.CORS(app)
 
@@ -23,12 +24,10 @@ def scoreboard():
     season = request.args.get('season')
     return json.dumps(db.getScore(int(season)))
 
-
 @app.route('/last-score', methods=['GET'])
 def last_score():
     db = DB(os.getenv("dbPath"), os.getenv("seasonName"), os.getenv("timezone"))
     return db.getLastScore()
-
 
 def run():
     app.run(port=8000)

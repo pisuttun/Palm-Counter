@@ -6,6 +6,7 @@ import dotenv
 dotenv.load_dotenv()
 
 db = DB(os.getenv("dbPath"), os.getenv("seasonName"), os.getenv("timezone"))
+
 client = discord.Client()
 
 
@@ -35,6 +36,7 @@ async def on_message(message):
         elif len(msg.split()) > 1:
             name = msg.split()[1]
             result = db.addCounter(name)
+
 
             if result == "Invalid name":
                 await message.channel.send(result)
