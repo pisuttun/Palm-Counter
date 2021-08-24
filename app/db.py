@@ -7,7 +7,7 @@ from datetime import datetime
 
 class DB:
 
-    validName = ['Tun', 'Ice', 'Fain', 'Pong', 'Palm', 'JJ']
+    validName = ['Tun', 'Ice', 'Fain', 'Pong', 'Palm', 'JJ', 'Palmcm']
 
     def __init__(self, dbPath, season, timezone):
         self.db = sqlite3.connect(dbPath)

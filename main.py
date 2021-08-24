@@ -1,7 +1,6 @@
 import os
 from app import flask
 from app import discord
-from app.db import DB
 import dotenv
 
 dotenv.load_dotenv()
